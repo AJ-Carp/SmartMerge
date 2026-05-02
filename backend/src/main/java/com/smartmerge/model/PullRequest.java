@@ -1,10 +1,9 @@
 package com.smartmerge.model;
 
-import jakarta.persistence.EnumType;
+import jakarta.persistence.*;
+
 import java.time.OffsetDateTime;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@Table(name = "pullRequests")
 public class PullRequest {
 
     @Id
