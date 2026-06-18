@@ -61,4 +61,4 @@ build/
 .DS_Store
 
 ######### Documentation #########
-BUILD_PLAN.md
+/notes
