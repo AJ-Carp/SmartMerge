@@ -14,4 +14,8 @@ public class ProfileService {
     public Profile saveProfile(Profile profile) {
         return profileRepository.save(profile);
     }
+
+    public Profile getProfileByUserId(int id) {
+        return profileRepository.findById(id).orElse(null);
+    }
 }

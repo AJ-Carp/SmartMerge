@@ -27,7 +27,7 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     private final ProfileService profileService;
     private final JwtService jwtService;
 
-    @Value("${client.ur}")
+    @Value("${client.url}")
     String CLIENT_URL;
 
 
@@ -69,7 +69,7 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
             // Spring creates a JSESSIONID cookie during the OAuth flow to track the temporary login session.
             // Since we use JWTs instead of server-side sessions, we don't need it — delete it immediately by setting maxAge to 0.
-            Cookie jsessionCookie = new Cookie("JESSIONID", null);
+            Cookie jsessionCookie = new Cookie("JSESSIONID", null);
             jsessionCookie.setPath("/");
             response.addCookie(jsessionCookie);
 
@@ -99,7 +99,7 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         return Profile.builder()
                 .userId(oauth2User.getAttribute("id"))
                 .login(oauth2User.getAttribute("login"))
-                .avatarUrl(oauth2User.getAttribute("email"))
+                .avatarUrl(oauth2User.getAttribute("avatar_url"))
                 .build();
     }
 }

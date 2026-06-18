@@ -1,6 +1,7 @@
 ######### SECRETS #########
 backend/src/main/resources/application-secrets.yml
 *.pem
+.env
 
 ######### FRONTEND #########
 frontend/node_modules/

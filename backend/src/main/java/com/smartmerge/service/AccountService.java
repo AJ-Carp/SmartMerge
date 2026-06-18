@@ -1,10 +1,8 @@
 package com.smartmerge.service;
 
 import org.springframework.stereotype.Service;
-
 import com.smartmerge.model.Account;
 import com.smartmerge.repository.AccountRepository;
-
 import lombok.RequiredArgsConstructor;
 
 @Service

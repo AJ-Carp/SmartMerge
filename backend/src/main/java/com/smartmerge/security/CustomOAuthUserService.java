@@ -53,7 +53,7 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.set(HttpHeaders.AUTHORIZATION, "token " + tokenValue);
-            httpHeaders.set(HttpHeaders.AUTHORIZATION, GITHUB_REQUEST_BODY_TYPE);
+            httpHeaders.set(HttpHeaders.ACCEPT, GITHUB_REQUEST_BODY_TYPE);
             HttpEntity<Void> httpEntity = new HttpEntity<>(httpHeaders);
 
             ResponseEntity<List<Map<String, Object>>> response  = restTemplate.exchange(
