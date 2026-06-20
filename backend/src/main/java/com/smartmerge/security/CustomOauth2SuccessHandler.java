@@ -54,9 +54,9 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             String jwt = jwtService.generateToken(savedAccount);
             log.info("Token generated for userId={}", savedAccount.getUserId());
 
-            /* sameSite=None and secure=true means the cookie will be sent in cross-site (one domain to another) 
-               requests and only if they are sent over HTTPS */
-            // so this won't work on localhost
+            /* Secure=true + SameSite=None works on HTTPS in production and in Chrome's localhost 
+            (which treats localhost as a secure context). Safari/Firefox are stricter. 
+            For local dev on all browsers, use Secure=false; SameSite=Lax instead. */
             ResponseCookie responseCookie = ResponseCookie.from("jwt", jwt)
                     .httpOnly(true)
                     .secure(true)

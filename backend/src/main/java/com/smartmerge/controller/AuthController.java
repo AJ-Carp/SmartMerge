@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AuthController {
     
     @PostMapping("/logout")
+    /* Spring sees HttpServletResponse (or HttpServletRequest) in a method signature and 
+       automatically injects the raw request/response object for that HTTP call */
     public ResponseEntity<Map<String, String>> logout(HttpServletResponse response) {
         try {
             Cookie cookie = new Cookie("jwt", null);
