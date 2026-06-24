@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import lombok.extern.slf4j.Slf4j;
-import static com.smartmerge.smartMergeConstants.GITHUB_EMAIL_ENDPOINT;
+import static com.smartmerge.SmartMergeConstants.GITHUB_EMAIL_ENDPOINT;
 
 @Slf4j
 @Service
