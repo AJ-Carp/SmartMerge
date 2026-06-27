@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.smartmerge.handler.BaseEventHandler;
 import com.smartmerge.handler.InstallationEventHandler;
+import com.smartmerge.handler.PullReqEventHandler;
 import com.smartmerge.handler.RepoEventHandler;
 import jakarta.annotation.PostConstruct;
 
@@ -23,6 +24,7 @@ public class GithubWebhooks {
     
     private final InstallationEventHandler installationEventHandler;
     private final RepoEventHandler repoEventHandler;
+    private final PullReqEventHandler pullReqEventHandler;
     private Map<String, BaseEventHandler> eventHandlerMap;
     
     @PostConstruct
@@ -31,7 +33,9 @@ public class GithubWebhooks {
             "created", installationEventHandler,
             "deleted", installationEventHandler,
             "added", repoEventHandler,
-            "removed", repoEventHandler
+            "removed", repoEventHandler,
+            "opened", pullReqEventHandler,
+            "closed", pullReqEventHandler
         );
     }
 
