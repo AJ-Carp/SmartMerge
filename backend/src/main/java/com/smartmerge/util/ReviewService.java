@@ -10,9 +10,9 @@ import java.util.List;
 @Service
 public class ReviewService {
     
-    public void postReview(String accessToken, String repoOwner, String repoName, int issueNumber) {
+    public void postReview(String accessToken, String repoOwner, String repoName, int issueNumber, String review) {
         CommentDTO testComment = CommentDTO.builder()
-            .body("this is a test review comment")
+            .body(review)
             .event("COMMENT")
             // .comments(List.of(CommentDTO.Comments.builder()
             //     .path("README.md")

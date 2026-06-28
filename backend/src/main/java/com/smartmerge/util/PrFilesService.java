@@ -2,7 +2,6 @@ package com.smartmerge.util;
 
 import static com.smartmerge.SmartMergeConstants.GITHUB_BASE_URL;
 import static com.smartmerge.SmartMergeConstants.GITHUB_REQUEST_BODY_TYPE;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,6 @@ public class PrFilesService {
         } catch (Exception e) {
             System.out.println("error processing JSON");
         }
-
         return response;
     }
 
@@ -61,5 +59,17 @@ public class PrFilesService {
             fileContents.add(decodedContent);
         }
         return fileContents;
+    }
+
+    public List<String[]> packageForReview(List<String> patches, List<String> filesContents, List<Map<String, Object>> fileData) {
+        List<String[]> fullFileContent = new ArrayList<>();
+        for (int i = 0; i < fileData.size(); i++) {
+            String[] subList = new String[3];
+            subList[0] = (String)fileData.get(i).get("filename");
+            subList[1] = filesContents.get(i);
+            subList[2] = patches.get(i);
+            fullFileContent.add(subList);
+        }
+        return fullFileContent;
     }
 }

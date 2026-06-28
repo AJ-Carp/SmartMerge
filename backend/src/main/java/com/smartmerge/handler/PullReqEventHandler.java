@@ -1,6 +1,7 @@
 package com.smartmerge.handler;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,6 @@ import com.smartmerge.util.ReviewService;
 import com.smartmerge.util.TokenService;
 import com.smartmerge.util.OpenAIService;
 import com.smartmerge.util.PrFilesService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,12 +56,17 @@ public class PullReqEventHandler implements BaseEventHandler {
                 List<String> filesContents = prFilesService.extractFileContents(fileData, accessToken);
                 System.out.println(filesContents);
                 
+                // package content for AI review. (name, content, patch) in the subarrays respectivly
+                List<String[]> fullFileContent = prFilesService.packageForReview(patches, filesContents, fileData);    
 
-                // send chnages to open AI for review (new file for this)
-                
+                // send changes to open AI for review (new file for this)
+                String userPrompt = openAIService.buildUserPrompt(fullFileContent);
+                System.out.println(userPrompt);
+                String response = openAIService.prompt(userPrompt);
+                System.out.println(response);
 
                 // send review to postReview to post it
-                reviewService.postReview(accessToken, repoOwner, repoName, issueNumber);
+                reviewService.postReview(accessToken, repoOwner, repoName, issueNumber, response);
 
                 // create and save PR to DB
                 PullRequest pullRequest = createPullRequest(pullRequestData, installationData, repositoryData, ownerData, userData);
