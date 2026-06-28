@@ -9,6 +9,7 @@ import com.smartmerge.model.Status;
 import com.smartmerge.service.PullRequestService;
 import com.smartmerge.util.ReviewService;
 import com.smartmerge.util.TokenService;
+import com.smartmerge.util.OpenAIService;
 import com.smartmerge.util.PrFilesService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class PullReqEventHandler implements BaseEventHandler {
     private final TokenService tokenService;
     private final ReviewService reviewService;
     private final PrFilesService prFilesService;
+    private final OpenAIService openAIService;
 
     @Override
     public void triggerEvent(Map<String, Object> webhookPayload, String action) {
@@ -47,9 +49,16 @@ public class PullReqEventHandler implements BaseEventHandler {
 
                 // fetch data regarding every changed/added/deleted file in the PR
                 List<Map<String, Object>> fileData = prFilesService.getFiles(accessToken, repoOwner, repoName, pullNumber);
+                List<String> patches = prFilesService.extractPatches(fileData);
+                for (String patch : patches) {
+                    System.out.println(patch + "\n \n");
+                }
+                List<String> filesContents = prFilesService.extractFileContents(fileData, accessToken);
+                System.out.println(filesContents);
+                
 
                 // send chnages to open AI for review (new file for this)
-
+                
 
                 // send review to postReview to post it
                 reviewService.postReview(accessToken, repoOwner, repoName, issueNumber);
@@ -75,8 +84,8 @@ public class PullReqEventHandler implements BaseEventHandler {
         Map<String, Object> ownerData,
         Map<String, Object> userData
     ) {
-        System.out.println(pullRequestData.get("created_at"));
-        System.out.println(OffsetDateTime.now());
+        // System.out.println(pullRequestData.get("created_at"));
+        // System.out.println(OffsetDateTime.now());
         return PullRequest.builder()
             .id((long)pullRequestData.get("id"))
             .title((String)pullRequestData.get("title"))

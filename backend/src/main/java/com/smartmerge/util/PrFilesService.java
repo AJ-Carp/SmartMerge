@@ -2,6 +2,8 @@ package com.smartmerge.util;
 
 import static com.smartmerge.SmartMergeConstants.GITHUB_BASE_URL;
 import static com.smartmerge.SmartMergeConstants.GITHUB_REQUEST_BODY_TYPE;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.core.ParameterizedTypeReference;
@@ -31,5 +33,33 @@ public class PrFilesService {
         }
 
         return response;
+    }
+
+    public List<String> extractPatches(List<Map<String, Object>> fileData) {
+        List<String> patches = new ArrayList<>();
+        for (Map<String, Object> file : fileData) {
+            String patch = (String)file.get("patch");
+            patches.add(patch);
+        }
+        return patches;
+    }
+
+    public List<String> extractFileContents(List<Map<String, Object>> fileData, String accessToken) {
+        List<String> fileContents = new ArrayList<>();
+        for (Map<String, Object> data : fileData) {
+            String contentsUrl = (String)data.get("contents_url");
+            Map<String, Object> response = RestClient.create()
+                .get()
+                .uri(contentsUrl)
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Accept", GITHUB_REQUEST_BODY_TYPE)
+                .retrieve()
+                .body(new ParameterizedTypeReference<Map<String, Object>>() {});
+            // returns base64
+            String encodedContent = (String)response.get("content");
+            String decodedContent = new String(java.util.Base64.getMimeDecoder().decode(encodedContent));
+            fileContents.add(decodedContent);
+        }
+        return fileContents;
     }
 }
