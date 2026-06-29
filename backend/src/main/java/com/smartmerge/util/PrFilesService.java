@@ -48,7 +48,8 @@ public class PrFilesService {
             String contentsUrl = (String)data.get("contents_url");
             Map<String, Object> response = RestClient.create()
                 .get()
-                .uri(contentsUrl)
+                // prevents spring from changing encoding
+                .uri(java.net.URI.create(contentsUrl))
                 .header("Authorization", "Bearer " + accessToken)
                 .header("Accept", GITHUB_REQUEST_BODY_TYPE)
                 .retrieve()

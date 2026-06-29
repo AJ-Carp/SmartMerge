@@ -59,14 +59,22 @@ public class PullReqEventHandler implements BaseEventHandler {
                 // package content for AI review. (name, content, patch) in the subarrays respectivly
                 List<String[]> fullFileContent = prFilesService.packageForReview(patches, filesContents, fileData);    
 
-                // send changes to open AI for review (new file for this)
+                // send changes to open AI for review
                 String userPrompt = openAIService.buildUserPrompt(fullFileContent);
                 System.out.println(userPrompt);
                 String response = openAIService.prompt(userPrompt);
                 System.out.println(response);
+                String mainReview = openAIService.parseMainReview(response);
+                System.out.println(mainReview);
+                List<String[]> inlineComments = openAIService.parseInlineComments(response);
+                for (String[] sub : inlineComments) {
+                    for (String s : sub) {
+                        System.out.println(s);
+                    }
+                }
 
                 // send review to postReview to post it
-                reviewService.postReview(accessToken, repoOwner, repoName, issueNumber, response);
+                reviewService.postReview(accessToken, repoOwner, repoName, issueNumber, mainReview, inlineComments);
 
                 // create and save PR to DB
                 PullRequest pullRequest = createPullRequest(pullRequestData, installationData, repositoryData, ownerData, userData);
