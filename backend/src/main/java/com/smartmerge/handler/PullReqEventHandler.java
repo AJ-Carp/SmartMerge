@@ -1,7 +1,8 @@
 package com.smartmerge.handler;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -39,6 +40,10 @@ public class PullReqEventHandler implements BaseEventHandler {
 
             if (action.equals("opened")) {
 
+                // create and save PR to DB
+                PullRequest pullRequest = createPullRequest(pullRequestData, installationData, repositoryData, ownerData, userData);
+                pullRequestService.savePullRequest(pullRequest);
+
                 // get access token
                 int installationId = (int)installationData.get("id");
                 String url = installationService.getInstallation(installationId).getAccessTokenUrl();
@@ -67,12 +72,22 @@ public class PullReqEventHandler implements BaseEventHandler {
                 // send review to postReview to post it
                 reviewService.postReview(accessToken, repoOwner, repoName, issueNumber, mainReview, inlineComments);
 
-                // create and save PR to DB
-                PullRequest pullRequest = createPullRequest(pullRequestData, installationData, repositoryData, ownerData, userData);
+                pullRequest.setReviewedAt(OffsetDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
                 pullRequestService.savePullRequest(pullRequest);
 
             } else if (action.equals("closed")) {
+                long id = (long)pullRequestData.get("id");
+                boolean merged = (boolean)pullRequestData.get("merged");
+                String closedAt = (String)pullRequestData.get("closed_at");
 
+                PullRequest pullRequest = pullRequestService.getPullRequest(id);
+                pullRequest.setClosedAt(OffsetDateTime.parse(closedAt));
+                if (merged) {
+                    pullRequest.setStatus(Status.MERGED);
+                } else {
+                    pullRequest.setStatus(Status.CLOSED);
+                }
+                pullRequestService.savePullRequest(pullRequest);
             } else {
                 log.info("No implementation for action={}", action);
             }
@@ -88,8 +103,6 @@ public class PullReqEventHandler implements BaseEventHandler {
         Map<String, Object> ownerData,
         Map<String, Object> userData
     ) {
-        // System.out.println(pullRequestData.get("created_at"));
-        // System.out.println(OffsetDateTime.now());
         return PullRequest.builder()
             .id((long)pullRequestData.get("id"))
             .title((String)pullRequestData.get("title"))
@@ -99,7 +112,8 @@ public class PullReqEventHandler implements BaseEventHandler {
             .repoId((int)repositoryData.get("id"))
             .installationId((int)installationData.get("id"))
             .status(Status.OPEN)
-            //.openedAt((OffsetDateTime)pullRequestData.get("created_at"))
+            // Github returns UTC 
+            .openedAt(OffsetDateTime.parse((String)pullRequestData.get("created_at")))
             .url((String)pullRequestData.get("url"))
             .build();
     }
