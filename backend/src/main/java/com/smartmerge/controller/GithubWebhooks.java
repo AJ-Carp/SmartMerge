@@ -41,8 +41,8 @@ public class GithubWebhooks {
 
     @PostMapping
     public void handleEvent(@RequestBody Map<String, Object> payload) {
-        String action = (String)payload.get("action");
-        BaseEventHandler baseEventHandler = (BaseEventHandler)eventHandlerMap.getOrDefault(action, null);
+        String action = (String) payload.get("action");
+        BaseEventHandler baseEventHandler = (BaseEventHandler) eventHandlerMap.getOrDefault(action, null);
         if (baseEventHandler != null) {
             baseEventHandler.triggerEvent(payload, action);
         } else {

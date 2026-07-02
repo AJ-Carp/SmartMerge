@@ -2,12 +2,10 @@ package com.smartmerge.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import org.springframework.stereotype.Service;
 import com.smartmerge.model.Repo;
 import com.smartmerge.repository.PullRequestRepository;
 import com.smartmerge.repository.RepoRepository;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 

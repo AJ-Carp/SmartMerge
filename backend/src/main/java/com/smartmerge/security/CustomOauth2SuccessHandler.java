@@ -40,7 +40,7 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             /* getPrincipal() returns the authenticated user. Since they logged in via GitHub OAuth,
                Spring wraps their GitHub profile data (id, login, email, avatar_url, etc.) in an OAuth2User object. */
             // This runs for both first-time registration and returning logins.
-            OAuth2User oAuth2User = (OAuth2User)authentication.getPrincipal();
+            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
             
             // Building and saving account and profile models
             Account account = createAccount(oAuth2User);

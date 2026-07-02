@@ -21,15 +21,15 @@ public class RepoEventHandler implements BaseEventHandler {
     public void triggerEvent(Map<String, Object> webhookPayload, String action) {
         try {
             if (action.equals("added")) {
-                Map<String, Object> installationData = (Map<String, Object>)webhookPayload.get("installation");
-                Map<String, Object> accountData = (Map<String, Object>)installationData.get("account");
-                List<Map<String, Object>> repoData = (List<Map<String, Object>>)webhookPayload.get("repositories_added");
+                Map<String, Object> installationData = (Map<String, Object>) webhookPayload.get("installation");
+                Map<String, Object> accountData = (Map<String, Object>) installationData.get("account");
+                List<Map<String, Object>> repoData = (List<Map<String, Object>>) webhookPayload.get("repositories_added");
 
                 List<Repo> repos = repoMapper.createRepos(repoData, installationData, accountData);
                 repoService.saveAllRepos(repos);
             }
             else if (action.equals("removed")) {
-                List<Map<String, Object>> repoData = (List<Map<String, Object>>)webhookPayload.get("repositories_removed");
+                List<Map<String, Object>> repoData = (List<Map<String, Object>>) webhookPayload.get("repositories_removed");
 
                 List<Long> repoIds = getRepoIds(repoData);
                 // delete all repos and associated PR's
@@ -48,7 +48,7 @@ public class RepoEventHandler implements BaseEventHandler {
         List<Long> repoIds = new ArrayList<>();
         
         for (Map<String, Object> repo : repoData) {
-            repoIds.add((long)repo.get("id"));
+            repoIds.add((long) repo.get("id"));
         }
         return repoIds;
     }

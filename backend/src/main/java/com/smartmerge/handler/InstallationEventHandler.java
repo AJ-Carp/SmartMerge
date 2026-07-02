@@ -23,9 +23,9 @@ public class InstallationEventHandler implements BaseEventHandler {
     @Override
     public void triggerEvent(Map<String, Object> webhookPayload, String action) {
         try {
-            Map<String, Object> installationData = (Map<String, Object>)webhookPayload.get("installation");
-            Map<String, Object> accountData = (Map<String, Object>)installationData.get("account");
-            List<Map<String, Object>> repoData = (List<Map<String, Object>>)webhookPayload.get("repositories");
+            Map<String, Object> installationData = (Map<String, Object>) webhookPayload.get("installation");
+            Map<String, Object> accountData = (Map<String, Object>) installationData.get("account");
+            List<Map<String, Object>> repoData = (List<Map<String, Object>>) webhookPayload.get("repositories");
 
             if (action.equals("created")) {
                 // create installations and repos
@@ -36,7 +36,7 @@ public class InstallationEventHandler implements BaseEventHandler {
                 installationService.saveInstallationAndRepos(installation, repos);
             } 
             else if (action.equals("deleted")) {
-                long installationId = (long)installationData.get("id");
+                long installationId = (long) installationData.get("id");
 
                 // deletes installation and all associated repos and PRs atomically
                 installationService.deleteInstallation(installationId);
@@ -52,9 +52,9 @@ public class InstallationEventHandler implements BaseEventHandler {
 
     private Installation createInstallation(Map<String, Object> installationData, Map<String, Object> accountData) {
         Installation installation = Installation.builder()
-            .installationId((long)installationData.get("id"))
-            .userId((long)accountData.get("id"))
-            .accessTokenUrl((String)installationData.get("access_tokens_url")).build();
+            .installationId((long) installationData.get("id"))
+            .userId((long) accountData.get("id"))
+            .accessTokenUrl((String) installationData.get("access_tokens_url")).build();
 
         return installation;
     }

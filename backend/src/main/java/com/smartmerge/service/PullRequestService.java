@@ -26,8 +26,4 @@ public class PullRequestService {
     public PullRequest savePullRequest(PullRequest pullRequest) {
         return pullRequestRepository.save(pullRequest);
     }
-
-    public void deletePRsByInstallationId(long installationId) {
-        pullRequestRepository.deleteAllByInstallationId(installationId);
-    }
 }

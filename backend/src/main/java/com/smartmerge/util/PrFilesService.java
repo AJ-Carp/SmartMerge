@@ -27,7 +27,7 @@ public class PrFilesService {
     public List<String> extractPatches(List<Map<String, Object>> fileData) {
         List<String> patches = new ArrayList<>();
         for (Map<String, Object> file : fileData) {
-            String patch = (String)file.get("patch");
+            String patch = (String) file.get("patch");
             patches.add(patch);
         }
         return patches;
@@ -36,10 +36,10 @@ public class PrFilesService {
     public List<String> extractFileContents(List<Map<String, Object>> fileData, String accessToken) {
         List<String> fileContents = new ArrayList<>();
         for (Map<String, Object> data : fileData) {
-            String contentsUrl = (String)data.get("contents_url");
+            String contentsUrl = (String) data.get("contents_url");
             Map<String, Object> response = githubServiceCaller.get(contentsUrl, accessToken, new ParameterizedTypeReference<Map<String, Object>>() {});
             // returns base64
-            String encodedContent = (String)response.get("content");
+            String encodedContent = (String) response.get("content");
             String decodedContent = new String(java.util.Base64.getMimeDecoder().decode(encodedContent));
             String fileContent = addLineNumbers(decodedContent);
             fileContents.add(fileContent);
@@ -65,7 +65,7 @@ public class PrFilesService {
         List<String[]> packagedFileContent = new ArrayList<>();
         for (int i = 0; i < fileData.size(); i++) {
             String[] subList = new String[3];
-            subList[0] = (String)fileData.get(i).get("filename");
+            subList[0] = (String) fileData.get(i).get("filename");
             subList[1] = filesContents.get(i);
             subList[2] = patches.get(i);
             packagedFileContent.add(subList);

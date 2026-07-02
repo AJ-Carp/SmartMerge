@@ -19,17 +19,9 @@ public class InstallationService {
     private final RepoRepository repoRepository;
     private final PullRequestRepository pullRequestRepository;
 
-    public Installation saveInstallation(Installation installation) {
-        return installationRepository.save(installation);
-    }
-
     public Installation getInstallation(long id) {
         return installationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("installation not found"));
-    }
-
-    public void deleteInstallationById(long id) {
-        installationRepository.deleteById(id);
     }
 
     @Transactional
