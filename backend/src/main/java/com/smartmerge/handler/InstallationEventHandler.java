@@ -24,10 +24,11 @@ public class InstallationEventHandler implements BaseEventHandler {
     public void triggerEvent(Map<String, Object> webhookPayload, String action) {
         try {
             Map<String, Object> installationData = (Map<String, Object>) webhookPayload.get("installation");
-            Map<String, Object> accountData = (Map<String, Object>) installationData.get("account");
-            List<Map<String, Object>> repoData = (List<Map<String, Object>>) webhookPayload.get("repositories");
-
+            
             if (action.equals("created")) {
+                Map<String, Object> accountData = (Map<String, Object>) installationData.get("account");
+                List<Map<String, Object>> repoData = (List<Map<String, Object>>) webhookPayload.get("repositories");
+
                 // create installations and repos
                 Installation installation = createInstallation(installationData, accountData);
                 List<Repo> repos = repoMapper.createRepos(repoData, installationData, accountData);
