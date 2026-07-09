@@ -4,6 +4,7 @@ import static com.smartmerge.SmartMergeConstants.GITHUB_BASE_URL;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class PrFilesService {
                 numberedFileContent.append(i).append(": ").append(line).append("\n");
             }
         } catch (IOException e) {
-            log.error("Error adding line numbers to file contents", e);
+            throw new UncheckedIOException(e);
         }
         return numberedFileContent.toString();
     }

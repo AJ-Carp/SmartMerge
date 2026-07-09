@@ -32,7 +32,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws IOException, ServletException {
         try {
             // URI = enpoint
-            log.warn("request is going through the filter URI={}", request.getRequestURI());
+            log.info("request is going through the filter URI={}", request.getRequestURI());
             // collect cookies from the request and find the one carrying the JWT
             Cookie[] cookies = request.getCookies();
             Cookie jwtCookie = null;
@@ -70,7 +70,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (Exception e) {
-            log.warn("Error during jwt authentication", e);
+            log.error("Error during jwt authentication", e);
             
             // deleting existing jwt cookie
             // creating new cookie with the same name tells browser to replace the existing one

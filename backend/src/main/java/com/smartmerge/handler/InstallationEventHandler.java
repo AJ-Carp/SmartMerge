@@ -22,32 +22,28 @@ public class InstallationEventHandler implements BaseEventHandler {
 
     @Override
     public void triggerEvent(Map<String, Object> webhookPayload, String action) {
-        try {
-            Map<String, Object> installationData = (Map<String, Object>) webhookPayload.get("installation");
-            
-            if (action.equals("created")) {
-                Map<String, Object> accountData = (Map<String, Object>) installationData.get("account");
-                List<Map<String, Object>> repoData = (List<Map<String, Object>>) webhookPayload.get("repositories");
+        
+        Map<String, Object> installationData = (Map<String, Object>) webhookPayload.get("installation");
+        
+        if (action.equals("created")) {
+            Map<String, Object> accountData = (Map<String, Object>) installationData.get("account");
+            List<Map<String, Object>> repoData = (List<Map<String, Object>>) webhookPayload.get("repositories");
 
-                // create installations and repos
-                Installation installation = createInstallation(installationData, accountData);
-                List<Repo> repos = repoMapper.createRepos(repoData, installationData, accountData);
+            // create installations and repos
+            Installation installation = createInstallation(installationData, accountData);
+            List<Repo> repos = repoMapper.createRepos(repoData, installationData, accountData);
 
-                // save installations and repos to DB
-                installationService.saveInstallationAndRepos(installation, repos);
-            } 
-            else if (action.equals("deleted")) {
-                long installationId = ((Number) installationData.get("id")).longValue();
-
-                // deletes installation and all associated repos and PRs atomically
-                installationService.deleteInstallation(installationId);
-            } 
-            else {
-                log.info("No implementation for action={}", action);
-            }
+            // save installations and repos to DB
+            installationService.saveInstallationAndRepos(installation, repos);
         } 
-        catch (Exception e) {
-            log.error("Action={}", action, e);
+        else if (action.equals("deleted")) {
+            long installationId = ((Number) installationData.get("id")).longValue();
+
+            // deletes installation and all associated repos and PRs atomically
+            installationService.deleteInstallation(installationId);
+        } 
+        else {
+            log.warn("No implementation for action={}", action);
         }
     }
 

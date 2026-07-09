@@ -3,6 +3,7 @@ package com.smartmerge.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.ai.chat.client.ChatClient;
@@ -84,9 +85,8 @@ public class OpenAIService {
                     mainReview.append(line + "\n");
                 }
             }
-            
         } catch (IOException e) {
-            log.error("Error parsing main review", e);
+            throw new UncheckedIOException(e);
         }
         return mainReview.toString();
     }
@@ -104,9 +104,8 @@ public class OpenAIService {
                     inlineComments.add(sub);
                 }
             }
-
         } catch (IOException e) {
-            log.error("Error parsing inline comments", e);
+            throw new UncheckedIOException(e);
         }
         return inlineComments;
     }
@@ -117,27 +116,25 @@ public class OpenAIService {
         StringBuilder comment = new StringBuilder();
         int i = 0;
         char c = line.charAt(i);
-        try {
-            while (i < line.length() && c != '|') {
-                filePath.append(c);
-                c = line.charAt(++i);
-            }
+
+        while (i < line.length() && c != '|') {
+            filePath.append(c);
             c = line.charAt(++i);
-            while (i < line.length() && c != '|') {
-                position.append(c);
-                c = line.charAt(++i);
-            }
-            c = line.charAt(++i);
-            while (i < line.length() - 1) {
-                comment.append(c);
-                c = line.charAt(++i);
-            }
-            comment.append(c);
-            sub[0] = filePath.toString().trim();
-            sub[1] = position.toString().trim();
-            sub[2] = comment.toString().trim();
-        } catch (Exception e) {
-            log.error("Malformed inline comments provided by AI", e);
         }
+        c = line.charAt(++i);
+        while (i < line.length() && c != '|') {
+            position.append(c);
+            c = line.charAt(++i);
+        }
+        c = line.charAt(++i);
+        while (i < line.length() - 1) {
+            comment.append(c);
+            c = line.charAt(++i);
+        }
+        comment.append(c);
+        
+        sub[0] = filePath.toString().trim();
+        sub[1] = position.toString().trim();
+        sub[2] = comment.toString().trim();
     }
 }

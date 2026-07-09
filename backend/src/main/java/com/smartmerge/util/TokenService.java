@@ -1,6 +1,7 @@
 package com.smartmerge.util;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
@@ -48,7 +49,7 @@ public class TokenService {
         }
     }
 
-    public String generateJwt() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+    private String generateJwt() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 
         // file contains the key
         // convert lines from file into list and remove the parts not in the key and convert each line to one string
@@ -85,14 +86,13 @@ public class TokenService {
                 .compact();
     }
 
-    private byte[] convertPkcs1ToPkcs8(byte[] decodedKey) {
+    // try-with-resources closes inputStream even if readObject() throws. IOException propagates to the caller
+    private byte[] convertPkcs1ToPkcs8(byte[] decodedKey) throws IOException {
         try(ASN1InputStream inputStream = new ASN1InputStream(decodedKey)) {
             ASN1Sequence sequence = (ASN1Sequence) inputStream.readObject();
             AlgorithmIdentifier algId = new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, DERNull.INSTANCE);
             PrivateKeyInfo privateKeyInfo = new PrivateKeyInfo(algId, sequence);
             return privateKeyInfo.getEncoded();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }
