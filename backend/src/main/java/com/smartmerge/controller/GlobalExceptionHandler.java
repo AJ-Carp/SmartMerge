@@ -1,5 +1,6 @@
 package com.smartmerge.controller;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,8 @@ import com.smartmerge.exception.ExceptionResponse;
 import com.smartmerge.exception.InstallationNotFoundException;
 import com.smartmerge.exception.ProfileNotFoundException;
 import com.smartmerge.exception.PullRequestNotFoundException;
+import com.smartmerge.exception.RepoNotFoundException;
+
 import lombok.extern.slf4j.Slf4j;
 
 /* Handles errors for the whole app in one place so individual controllers don't have to.
@@ -42,6 +45,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleInstallationNotFoundException(InstallationNotFoundException e) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(e.getMessage(), LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(RepoNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleRepoNotFoundException(RepoNotFoundException e) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(e.getMessage(), LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ExceptionResponse> handleAccessDeniedException(AccessDeniedException e) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(e.getMessage(), LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
     }
 
     @ExceptionHandler(ResponseStatusException.class)

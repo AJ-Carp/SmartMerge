@@ -2,6 +2,7 @@ package com.smartmerge.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import com.smartmerge.exception.RepoNotFoundException;
 import com.smartmerge.model.Repo;
 import com.smartmerge.repository.PullRequestRepository;
 import com.smartmerge.repository.RepoRepository;
@@ -14,6 +15,11 @@ public class RepoService {
     
     private final RepoRepository repoRepository;
     private final PullRequestRepository pullRequestRepository;
+
+    public Repo getRepo(long repoId) {
+        return repoRepository.findById(repoId)
+                .orElseThrow(() -> new RepoNotFoundException("No repository found for id: " + repoId));
+    }
     
     public List<Repo> saveAllRepos(List<Repo> repos) {
         return repoRepository.saveAll(repos);
