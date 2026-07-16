@@ -118,7 +118,8 @@ public class PullReqEventHandler implements BaseEventHandler {
             .status(Status.OPEN)
             // Github returns UTC 
             .openedAt(OffsetDateTime.parse((String) pullRequestData.get("created_at")))
-            .url((String) pullRequestData.get("url"))
+            // html_url is the page a human can open — plain "url" is the api endpoint
+            .url((String) pullRequestData.get("html_url"))
             .build();
     }
 }
