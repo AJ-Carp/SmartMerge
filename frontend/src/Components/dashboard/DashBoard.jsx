@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Repositories from './Repositories';
 import Profile from './Profile';
 
 import {
@@ -13,7 +14,7 @@ export default function DashBoard() {
   const [selectedTab, setSelectedTab] = useState('repositories');
 
   const tabs = {
-    repositories: <p>Repositories view coming soon</p>,
+    repositories: <Repositories />,
   };
 
   const handleTabClick = (tab) => {
