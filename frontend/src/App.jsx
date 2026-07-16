@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { useAuth } from './Components/hooks/AuthContext'
-import { MessageProvider } from './Components/alerts/MessageContext'
-import Auth from './Components/Auth/Auth'
-import OAuthCallBack from './Components/Auth/OAuthCallBack'
-import AuthenticationSuccess from './Components/Auth/AuthenticationSuccess'
-import DashBoard from './Components/dashboard/DashBoard'
+import { useAuth } from './components/hooks/AuthContext'
+import { MessageProvider } from './components/alerts/MessageContext'
+import Auth from './components/auth/Auth'
+import OAuthCallBack from './components/auth/OAuthCallBack'
+import AuthenticationSuccess from './components/auth/AuthenticationSuccess'
+import DashBoard from './components/dashboard/DashBoard'
+import RepositoryPullRequests from './components/dashboard/RepositoryPullRequests'
 
 function App() {
   const { isLoggedIn } = useAuth()
@@ -17,6 +18,7 @@ function App() {
           <Route path="/call-back" element={<AuthenticationSuccess />} />
           <Route path="/authenticate" element={<OAuthCallBack />} />
           <Route path="/dashboard" element={isLoggedIn ? <DashBoard /> : <Auth />} />
+          <Route path="/dashboard/repository/:id" element={isLoggedIn ? <RepositoryPullRequests /> : <Auth />} />
         </Routes>
       </BrowserRouter>
     </MessageProvider>

@@ -12,8 +12,9 @@ function RepoListItem({ repo }) {
   const navigate = useNavigate();
 
   const handleGoToRepo = () => {
-    // send them to this repo's pull request page
-    navigate(`/dashboard/repository/${repo.repoId}`);
+    // send them to this repo's pull request page. passing the name along too since the
+    // PR payload doesn't carry it and that page needs it for the header.
+    navigate(`/dashboard/repository/${repo.repoId}`, { state: { repoName: repo.repoName } });
   };
 
   return (
