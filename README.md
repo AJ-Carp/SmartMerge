@@ -4,11 +4,6 @@
 
 Built with **Java / Spring Boot**, **React**, **PostgreSQL**, and the **OpenAI API** (via Spring AI).
 
-<p align="center">
-  <img src="readme-content/dashboard.png" alt="SmartMerge dashboard — repositories and pull-request history" width="820">
-  <br><em>The SmartMerge dashboard — your connected repositories and the review status of every pull request.</em>
-</p>
-
 ---
 
 ## What it does
@@ -17,6 +12,11 @@ Built with **Java / Spring Boot**, **React**, **PostgreSQL**, and the **OpenAI A
 2. **Install the app on repositories** — one click opens GitHub's install flow; the user picks which repos SmartMerge can access.
 3. **Automatic PR reviews** — when a pull request is opened on a connected repo, GitHub notifies the backend via webhook. The backend fetches the PR's changed files, asks the AI for a review, and posts it back to the PR: a summary comment plus inline comments on specific lines.
 4. **Track everything in the dashboard** — repositories and their pull requests are stored in Postgres and shown in the dashboard, with each PR's status tracked through its lifecycle: `OPEN → REVIEWED → MERGED / CLOSED`.
+
+<p align="center">
+  <img src="readme-content/dashboard.png" alt="SmartMerge dashboard — repositories and pull-request history" width="820">
+  <br><em>The SmartMerge dashboard — your connected repositories and the review status of every pull request.</em>
+</p>
 
 ---
 
@@ -139,13 +139,13 @@ backend/    Spring Boot 3.5 REST API (Java 17, Maven)
 
 ## Interesting engineering problems
 
-**Getting inline comments onto the right lines.** This was the hardest part to get right. GitHub's older `position` field wants an offset into the diff patch, and the AI kept miscounting it, so comments landed on the wrong lines. I first moved to GitHub's `line` + `side` fields so I could pass an absolute line number instead of a patch offset. That helped but didn't fix it, because the model was still counting lines itself and getting it wrong. What actually solved it was pre-numbering every line of the file in the prompt, so the AI just reads the number off the line instead of counting. Once the counting was handled in code and not by the model, the comments landed where they were supposed to.
+**Getting inline comments onto the right lines.** This was the hardest part. GitHub's old `position` field wants an offset into the diff, and the AI kept miscalculating it, so comments landed on the wrong lines. Switching to the `line` + `side` fields (a plain line number) helped but didn't fix it — the model was still counting lines, and still getting it wrong. What finally worked was numbering every line of the file in the prompt, so the AI reads the number off the code instead of counting to it. Moving that mechanical work out of the model was the fix.
 
-**One generic GitHub client instead of five.** GitHub API calls were originally duplicated across services, each building its own client and headers. They were consolidated into a single `GithubServiceCaller` with two generic methods — `get` and `post` taking a `ParameterizedTypeReference<T>` — so one method serves every response shape (`List<Map>`, `Map`, or no body at all). Cross-cutting changes like GitHub's required `User-Agent` header became one-line edits.
+**One generic GitHub client instead of five.** The GitHub calls started out copy-pasted across every class that talked to GitHub, each with its own client and headers. I pulled them into one `GithubServiceCaller` with two generic methods — `get` and `post`, taking a `ParameterizedTypeReference<T>` — so a single method handles every response shape (`List<Map>`, `Map`, or nothing at all). Adding something like GitHub's required `User-Agent` header became a one-line change instead of five.
 
-**Two kinds of GitHub identity.** Logging a *user* into the dashboard (OAuth App) and acting as a *bot* on repositories (GitHub App) are entirely separate credential systems — user OAuth tokens, app JWTs, and installation tokens each authenticate different things. Keeping these flows distinct while sharing one HTTP client shaped much of the backend's design.
+**Two kinds of GitHub identity.** Logging a *user* into the dashboard and acting as a *bot* on their repos are two separate GitHub systems — an OAuth App and a GitHub App — with three kinds of token between them (user OAuth tokens, app JWTs, installation tokens), each proving something different. Keeping those straight while running them all through one shared HTTP client drove a lot of the backend's design.
 
-**Webhook payload quirks.** Jackson deserializes JSON numbers as `Integer` *or* `Long` depending on magnitude, so every GitHub ID is cast through `Number` to avoid runtime `ClassCastException`s — and all IDs are stored as `long`, since GitHub IDs overflow `int`.
+**Webhook payload quirks.** Jackson boxes JSON numbers as `Integer` or `Long` depending on how big they are — which I found out the hard way when a cast blew up at runtime. Every GitHub ID now goes through `Number` to dodge `ClassCastException`s, and they're all stored as `long`, since GitHub's ids overflow `int`.
 
 ---
 
